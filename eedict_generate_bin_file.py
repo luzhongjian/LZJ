@@ -224,19 +224,31 @@ def build_four_level_index(f1, f2, f3, f4, entrylist):
          f1.write(s)
 
 if __name__ == '__main__':
-   entrylist = load_ee_dict(r'D:\MerlionColor\OxfordForProcessing\eedict_lib_utf-16.txt', 'utf-16')
-   #entrylist = load_ee_dict(r'D:\MerlionColor\OxfordForProcessing\oxford.txt', 'utf-16')
+   import sys, os
+   entrylist = load_ee_dict(sys.argv[1], sys.argv[2])
    entrylist = sorted(entrylist, key = keyfunc)
-   bin_dict_file = open(r'd:\MerlionColor\OxfordForProcessing\eedict_ciku.bin', 'wb')
-   txt_dict_file = open(r'd:\MerlionColor\OxfordForProcessing\eetdict_ciku.txt', 'wb')
+   dirname = 'eedict'
+   try:
+      os.mkdir(dirname)
+   except OSError, why:
+      print "Failed: %s" % str(why)
+   bin_dict_file = open(os.path.join('eedict', 'eedict_ciku.bin'), 'wb')
+   txt_dict_file = open(r'eetdict_ciku.txt', 'wb')
    generate_ee_dict_file(bin_dict_file, entrylist)
    bin_dict_file.close()
    generate_origin_dict_file(txt_dict_file, entrylist)
    txt_dict_file.close()
-   level1_index_file = open(r'd:\MerlionColor\OxfordForProcessing\eedict_1st_index.bin', 'wb')
-   level2_index_file = open(r'd:\MerlionColor\OxfordForProcessing\eedict_2nd_index.bin', 'wb')
-   level3_index_file = open(r'd:\MerlionColor\OxfordForProcessing\eedict_3rd_index.bin', 'wb')
-   level4_index_file = open(r'd:\MerlionColor\OxfordForProcessing\eedict_4th_index.bin', 'wb')
+
+   dirname = 'egdict'
+   try:
+      os.mkdir(dirname)
+   except OSError, why:
+      print "Failed: %s" % str(why)
+
+   level1_index_file = open(os.path.join('egdict', 'egdict_1st_index.bin'), 'wb')
+   level2_index_file = open(os.path.join('egdict', 'egdict_2nd_index.bin'), 'wb')
+   level3_index_file = open(os.path.join('egdict', 'egdict_3rd_index.bin'), 'wb')
+   level4_index_file = open(os.path.join('egdict', 'egdict_4th_index.bin'), 'wb')
    build_four_level_index(level1_index_file, level2_index_file, level3_index_file, level4_index_file,
          entrylist)
    """

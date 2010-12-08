@@ -1,4 +1,5 @@
 """author lzj"""
+import sys
 
 class DictFile:
    def __init__(self, dictfilename, encoding):
@@ -7,7 +8,7 @@ class DictFile:
          from codecs import open
          self.openFile = open(dictfilename, 'r', encoding)
       except Exception, e:
-         print 'DictFile.__init__' + ' : ' + str(e)
+         print >> sys.stderr, 'DictFile.__init__' + ' : ' + str(e)
 
    def getLine(self):
       return self.openFile.readline()

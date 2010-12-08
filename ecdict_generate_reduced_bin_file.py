@@ -243,24 +243,29 @@ def build_four_level_index(f1, f2, f3, f4, entrylist):
 
 if __name__ == '__main__':
    #entrylist = load_ec_dict(r'd:\1\hhdict-tmp.txt', 'gb18030')
-   entrylist = load_ec_dict(r'd:\MerlionColor\reduced_ecdict\ecdict_lib_utf-16.txt', 'utf-16')
+   import sys, os
+   entrylist = load_ec_dict(sys.argv[1], sys.argv[2])
    entrylist = sorted(entrylist, key = keyfunc)
-   bin_dict_file = open(r'd:\MerlionColor\reduced_ecdict\ecdict_reduced_ciku.bin', 'wb')
+   dirname = 'reduced_ecdict'
+   try:
+      os.mkdir(dirname)
+   except OSError, why:
+      print "Failed: %s" % str(why)
+   bin_dict_file = open(os.path.join('reduced_ecdict', 'ecdict_reduced_ciku.bin'), 'wb')
    import codecs
-   txt_dict_file = codecs.open(r'd:\MerlionColor\reduced_ecdict\ectdict_reduced_ciku.txt', 'wb', 'utf-16')
+   txt_dict_file = codecs.open(r'ectdict_reduced_ciku.txt', 'wb', 'utf-16')
    generate_ec_dict_file(bin_dict_file, entrylist)
    bin_dict_file.close()
    generate_origin_dict_file(txt_dict_file, entrylist)
    txt_dict_file.close()
-   level1_index_file = open(r'd:\MerlionColor\reduced_ecdict\ecdict_reduced_1st_index.bin', 'wb')
-   level2_index_file = open(r'd:\MerlionColor\reduced_ecdict\ecdict_reduced_2nd_index.bin', 'wb')
-   level3_index_file = open(r'd:\MerlionColor\reduced_ecdict\ecdict_reduced_3rd_index.bin', 'wb')
-   level4_index_file = open(r'd:\MerlionColor\reduced_ecdict\ecdict_reduced_4th_index.bin', 'wb')
+   level1_index_file = open(os.path.join('reduced_ecdict', 'ecdict_reduced_1st_index.bin'), 'wb')
+   level2_index_file = open(os.path.join('reduced_ecdict', 'ecdict_reduced_2nd_index.bin'), 'wb')
+   level3_index_file = open(os.path.join('reduced_ecdict', 'ecdict_reduced_3rd_index.bin'), 'wb')
+   level4_index_file = open(os.path.join('reduced_ecdict', 'ecdict_reduced_4th_index.bin'), 'wb')
    build_four_level_index(level1_index_file, level2_index_file, level3_index_file, level4_index_file,
          entrylist)
    level1_index_file.close()
    level2_index_file.close()
    level3_index_file.close()
    level4_index_file.close()
-
 

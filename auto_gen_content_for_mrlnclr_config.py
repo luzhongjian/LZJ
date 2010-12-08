@@ -1,17 +1,28 @@
-dict(
-   dictionary_filename = dict(
-      cc_dict_filename         = r'd:\1\hhdict-tmp.txt',
-      ee_dict_filename         = r'd:\1\chengyu.txt',
-      reduced_ce_dict_filename = r'',
-      reduced_ec_dict_filename = r''
-   )
-
-   dictionary_processor = dict(
-      cc_dict_filename         = r'',
-      ee_dict_filename         = r'',
-      reduced_ce_dict_filename = r'',
-      reduced_ec_dict_filename = r''
-   )
-
-   encrypting_key = 
-)
+Content_Processor_Config = {
+      'chinese-chinese dictionary' : {
+         'filename'   : r'hansvision.txt'
+         ,'encoding'  : 'utf-16'
+         ,'processor' : r'start.py'
+         ,'encryption': 'ER_Key'
+         },
+      'chinese-idiom dictionary' : {
+         'filename'  : r'chengyu.txt',
+         'encoding'  : 'utf-16',
+         'encryption': 'ER_Key'
+         },
+      'english-english dictionary' : {
+         'filename'  : r'oxford.txt',
+         'processor' : r'eedict_generate_bin_file.py',
+         'encoding'  : 'utf-16'
+         },
+      'english-chinese dictionary' : {
+         'filename' : r'ec.txt',
+         'encoding' : 'utf-16',
+         'processor': 'ecdict_generate_reduced_bin_file.py'
+         },
+      'chinese-english dictionary' : {
+         'filename'  : r'ce.txt'
+         ,'encoding' : 'gb18030'
+         ,'processor': 'gen_ce_bin_file.py'
+         },
+      }

@@ -3,7 +3,7 @@
 from hhdict_file import HHDictFile, HHDictEntry
 from merge_third_index_for_cc import dict_merge_for_indexing
 from test import repr_entry ,repr_new_entry,repr_chengyu_entry
-import codecs
+import codecs, os
 from checkchengyudict import checkchengyudict
 
 ENUM_DICTIONARY_HANSVISION = 0
@@ -29,9 +29,11 @@ def generate_hh_dict_file(f, entrylist, mode):
    global DICT_ENTRY_CONST_LEN
    
    if f.name.endswith('ccdict_ciku.bin'):
-      offset_record_files = codecs.open('d:\\1\\gen_cc_offset.txt', 'w', 'utf-16')
+      offset_record_files = codecs.open('gen_cc_offset.txt', 'w', 'utf-16')
    elif f.name.endswith('chengyu_ciku.bin'):
-      offset_record_files = codecs.open('d:\\1\\gen_chengyu_offset.txt', 'w', 'utf-16')
+      offset_record_files = codecs.open('gen_chengyu_offset.txt', 'w', 'utf-16')
+   else:
+      offset_record_files = codecs.open('ce_offset.txt', 'w', 'utf-16')
 
    s = pack('H', len(entrylist))
    f.write(s)
@@ -63,12 +65,12 @@ def generate_hh_dict_file(f, entrylist, mode):
 
 def build_three_level_index(f1, f2, f3, entrylist, mode):
    global DICT_ENTRY_CONST_LEN
-   f_dbg_record_cc_dict_offset = codecs.open('d:\\1\\idx_cc_offset.txt', 'w', 'utf-16')
-   f_dbg_thirdindex_offset = codecs.open('d:\\1\\idx_third_offset.txt', 'w', 'utf-16')
+   f_dbg_record_cc_dict_offset = codecs.open('idx_cc_offset.txt', 'w', 'utf-16')
+   f_dbg_thirdindex_offset = codecs.open('idx_third_offset.txt', 'w', 'utf-16')
 
-   cc_bin_dict_file = open(r'd:\1\ccdict_ciku.bin', 'wb')
+   cc_bin_dict_file = open(r'ccdict\ccdict_ciku.bin', 'wb')
    cc_bin_dict_file.seek(2)
-   chengyu_bin_dict_file = open(r'd:\1\chengyu_ciku.bin', 'wb')
+   chengyu_bin_dict_file = open(r'ccdict-idiom\chengyu_ciku.bin', 'wb')
    chengyu_bin_dict_file.seek(2)
    CONST_LEN = 14
    SYNTHESIZED_DICT_CONST_LEN = 18
@@ -86,10 +88,10 @@ def build_three_level_index(f1, f2, f3, entrylist, mode):
    for entry in entrylist:
       cur = f3.tell()
       if (entry.has_key('entry')):
-         entry_pinyin = entry['pinyin']
+         entry_pinyin = entry.get('pinyin', '')
          entry_text = entry['entry']
       else:
-         entry_pinyin = entry[entry.keys()[0]]['pinyin']
+         entry_pinyin = entry[entry.keys()[0]].get('pinyin', '')
          entry_text = entry[entry.keys()[0]]['entry']
       entry_initial_char = entry_text[0]
       #entry_pinyin = entry['pinyin']
@@ -278,23 +280,38 @@ def tag_each_entry_dictionary_type(entrylist, dictionary_type):
       entrylist[i]['dictionary_type'] = [dictionary_type]
 
 if __name__ == '__main__':
-   entrylist = load_hh_dict(r'd:\1\hhdict-tmp.txt', 'utf-16')
+   import sys
+   entrylist = load_hh_dict(sys.argv[1], sys.argv[3])
    tag_each_entry_dictionary_type(entrylist, ENUM_DICTIONARY_HANSVISION)
 
-   bin_dict_file = open(r'd:\1\ccdict_ciku.bin', 'wb')
+   try:
+      os.mkdir(r'ccdict')
+   except OSError, why:
+      print "Failed: %s" % str(why)
+
+   bin_dict_file = open(r'ccdict\ccdict_ciku.bin', 'wb')
    #generate_hh_dict_file(bin_dict_file, entrylist, 1) # 1 for cc dictionary, 2 for ce dictionary
    bin_dict_file.close()
 
-   cyentrylist = load_hh_dict(r'd:\1\chengyu.txt', 'utf-16')
+   cyentrylist = load_hh_dict(sys.argv[2], sys.argv[3])
    tag_each_entry_dictionary_type(cyentrylist, ENUM_DICTIONARY_CHENGYU)
 
-   chengyu_bin_dict_file = open(r'd:\1\chengyu_ciku.bin', 'wb')
+   try:
+      os.mkdir(r'ccdict-idiom')
+   except OSError, why:
+      print "Failed: %s" % str(why)
+   chengyu_bin_dict_file = open(r'ccdict-idiom\chengyu_ciku.bin', 'wb')
    #generate_hh_dict_file(chengyu_bin_dict_file, cyentrylist, 1) # 1 for cc dictionary, 2 for ce dictionary
    chengyu_bin_dict_file.close()
 
-   level1_index_file = open(r'd:\1\cgdict_1st_index.bin', 'wb')
-   level2_index_file = open(r'd:\1\cgdict_2nd_index.bin', 'wb')
-   level3_index_file = open(r'd:\1\cgdict_3rd_index.bin', 'wb')
+   cgdict = 'cgdict'
+   try:
+      os.mkdir(cgdict)
+   except OSError, why:
+      print "Failed: %s" % str(why)
+   level1_index_file = open(os.path.join(cgdict, 'cgdict_1st_index.bin'), 'wb')
+   level2_index_file = open(os.path.join(cgdict, 'cgdict_2nd_index.bin'), 'wb')
+   level3_index_file = open(os.path.join(cgdict, 'cgdict_3rd_index.bin'), 'wb')
 
    merged_entry_list = dict_merge_for_indexing(entrylist, cyentrylist)
 #### check the chengyu dict 
@@ -306,8 +323,8 @@ if __name__ == '__main__':
   # check_result.close()
 ###  end check
    #### Add a dump for test purpose here ####
-   merged_result_f = codecs.open(r'd:\1\merged_list.txt', 'w', 'utf-16')
-   merged_resultchengyu_f = codecs.open(r'd:\1\mergedchengyu_list.txt', 'w', 'utf-16')
+   merged_result_f = codecs.open(r'merged_list.txt', 'w', 'utf-16')
+   merged_resultchengyu_f = codecs.open(r'mergedchengyu_list.txt', 'w', 'utf-16')
    chengyunum=0
    chengyulen=len(cyentrylist)
    mergelistlen=len(merged_entry_list)
